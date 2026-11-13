@@ -1,74 +1,211 @@
 import * as vscode from 'vscode';
+import { mockTestReport } from './mocks';
+import * as dotenv from 'dotenv';
 
 export function activate(context: vscode.ExtensionContext) {
+  dotenv.config({ path: vscode.Uri.joinPath(context.extensionUri, '.env').fsPath });
+
+  const createDashboard = (fileName: string = 'Файл не выбран') => {
+    const panel = vscode.window.createWebviewPanel(
+      'atestDashboard',
+      'ATest Dashboard',
+      vscode.ViewColumn.One,
+      { enableScripts: true }
+    );
+
+    let html = getWebviewContent();
+    html = html.replace('__FILE_NAME__', fileName);
+    panel.webview.html = html;
+
+    panel.webview.onDidReceiveMessage(message => {
+      if (message.command === 'generate') {
+        vscode.window.showInformationMessage(`Генерация для: ${fileName}`);
+        
+        const useMocks = process.env.USE_MOCKS === 'true';
+
+        if (useMocks) {
+          setTimeout(() => {
+            panel.webview.postMessage({
+              command: 'reportReady',
+              data: mockTestReport
+            });
+          }, 2000);
+        } else {
+          // TODO
+        }
+      }
+    });
+  };
+
   context.subscriptions.push(
     vscode.commands.registerCommand('atest.openDashboard', () => {
-      const panel = vscode.window.createWebviewPanel(
-        'atestDashborad',
-        'ATestDashboard',
-        vscode.ViewColumn.One,
-        { enableScripts: true }
-      );
-
-      panel.webview.html = `
-                <!DOCTYPE html>
-                <html lang="ru">
-                <head>
-                    <meta charset="UTF-8">
-                    <style>
-                        body {
-                            font-family: sans-serif;
-                            padding: 20px;
-                            color: var(--vscode-foreground);
-                            background: var(--vscode-editor-background);
-                        }
-                        button {
-                            padding: 10px 15px;
-                            background: var(--vscode-button-background);
-                            color: var(--vscode-button-foreground);
-                            border: none;
-                            border-radius: 4px;
-                            cursor: pointer;
-                        }
-                    </style>
-                </head>
-                <body>
-                    <h2>ATest</h2>
-                    <p>Панель тестов</p>
-                    <button onclick="tsClick()">Создать тесты</button>
-
-                    <script>
-                        const vscode = acquireVsCodeApi();
-                        function tsClick() {
-                            vscode.postMessage({ command: 'generate' });
-                        }
-                    </script>
-                </body>
-                </html>
-            `;
-
-      panel.webview.onDidReceiveMessage(message => {
-        if (message.command === 'generate') {
-          vscode.window.showInformationMessage('Подождите...');
-          GenTest();
-        }
-      });
-
-    }),
-
-    vscode.commands.registerCommand('atest.generateTests', (uri?: vscode.Uri) => {
-      const path = uri ? uri.fsPath : 'текущий файл';
-      //vscode.window.showInformationMessage(`тест: ${path}`);
-      GenTest(uri);
+      createDashboard();
     })
+  );
 
-    );
-  function GenTest(uri?: vscode.Uri) {
-    const filePath = uri ? uri.fsPath : vscode.window.activeTextEditor?.document.uri.fsPath || 'не выбран файл';
+  context.subscriptions.push(
+    vscode.commands.registerCommand('atest.generateTests', (uri?: vscode.Uri) => {
+      const fileName = uri ? uri.fsPath.split(/[\\/]/).pop() : 'Файл не выбран';
+      createDashboard(fileName);
+      
+      // TODO
+    })
+  );
+}
 
-  vscode.window.showInformationMessage(`Подождите...: ${filePath}`);
-
+function getWebviewContent() {
+  return `<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: var(--vscode-font-family);
+            color: var(--vscode-foreground);
+            background-color: var(--vscode-editor-background);
+            padding: 20px;
+            margin: 0;
         }
+        h1 { font-size: 1.5rem; margin-bottom: 20px; font-weight: 600; }
+        button {
+            background-color: var(--vscode-button-background);
+            color: var(--vscode-button-foreground);
+            border: none;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 2px;
+            margin-bottom: 20px;
+        }
+        button:hover { background-color: var(--vscode-button-hoverBackground); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .hidden { display: none !important; }
+        
+        .loader-container { display: flex; flex-direction: column; align-items: center; margin-top: 40px; }
+        .spinner {
+            border: 3px solid var(--vscode-editor-foreground);
+            border-top: 3px solid transparent;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+            opacity: 0.7;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .stats { display: flex; gap: 20px; margin-bottom: 20px; }
+        .stat-card {
+            background: var(--vscode-editorWidget-background);
+            border: 1px solid var(--vscode-widget-border);
+            padding: 15px;
+            border-radius: 4px;
+            min-width: 100px;
+        }
+        .stat-label { font-size: 12px; color: var(--vscode-descriptionForeground); margin-bottom: 5px; }
+        .stat-value { font-size: 24px; font-weight: bold; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--vscode-widget-border); }
+        th { color: var(--vscode-descriptionForeground); font-weight: normal; font-size: 13px; }
+        td { font-family: var(--vscode-editor-font-family); font-size: 13px; }
+        .green { color: #4ade80; }
+        
+        .file-badge {
+            font-family: var(--vscode-editor-font-family); 
+            font-weight: bold; 
+            margin-bottom: 15px; 
+            background: var(--vscode-editorWidget-background); 
+            padding: 10px; 
+            border-radius: 4px;
+            border: 1px solid var(--vscode-widget-border);
+        }
+    </style>
+</head>
+<body>
+    <h1>ATest Generator</h1>
+
+    <div id="screen-select">
+        <p style="color: var(--vscode-descriptionForeground); margin-bottom: 5px;">Выбранный файл:</p>
+        <div class="file-badge">__FILE_NAME__</div>
+        <button id="btn-generate">Сгенерировать тесты</button>
+    </div>
+
+    <div id="screen-loading" class="hidden loader-container">
+        <div class="spinner"></div>
+        <p>Агент анализирует код...</p>
+        <p style="font-size: 12px; color: var(--vscode-descriptionForeground);">Запрос к LLM может занять время</p>
+    </div>
+
+    <div id="screen-report" class="hidden">
+        <h2 style="font-size: 1.2rem; color: #4ade80; margin-bottom: 20px;">Успешно сгенерировано!</h2>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-label">Методов</div>
+                <div class="stat-value" id="val-methods">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Тестов</div>
+                <div class="stat-value green" id="val-tests">0</div>
+            </div>
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Метод</th>
+                    <th style="text-align: right;">Сгенерировано тестов</th>
+                </tr>
+            </thead>
+            <tbody id="report-table-body"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const vscode = acquireVsCodeApi();
+        const btnGenerate = document.getElementById('btn-generate');
+        
+        function showScreen(id) {
+            ['screen-select', 'screen-loading', 'screen-report'].forEach(s => {
+                document.getElementById(s).classList.add('hidden');
+            });
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        btnGenerate.addEventListener('click', () => {
+            showScreen('screen-loading');
+            vscode.postMessage({ command: 'generate' });
+        });
+
+        window.addEventListener('message', event => {
+            const message = event.data;
+            if (message.command === 'reportReady') {
+                const data = message.data;
+                
+                document.getElementById('val-methods').textContent = data.total_methods;
+                document.getElementById('val-tests').textContent = data.total_tests;
+                
+                const tbody = document.getElementById('report-table-body');
+                tbody.innerHTML = '';
+                
+                data.details.forEach(item => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = \`
+                        <td>\${item.method}</td>
+                        <td style="text-align: right;" class="green">\${item.tests}</td>
+                    \`;
+                    tbody.appendChild(tr);
+                });
+                
+                showScreen('screen-report');
+            }
+        });
+    </script>
+</body>
+</html>`;
 }
 
 export function deactivate() {}
