@@ -1,0 +1,17 @@
+node_modules/
+out/
+dist/
+build/
+.vscode-test/
+.vscode/
+
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+
+.env
+*.key
+*.pem
+*.log
+.DS_Store

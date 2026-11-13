@@ -1,0 +1,46 @@
+{
+  "name": "aitester",
+  "displayName": "AI Tester",
+  "description": "AI Test Generator",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "atest.openDashboard",
+        "title": "ATest: Открыть дашбоард"
+      },
+      {
+        "command": "atest.generateTests",
+        "title": "ATest: Создать тест"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "atest.generateTests",
+          "group": "navigation"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "atest.generateTests",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.3"
+  }
+}
