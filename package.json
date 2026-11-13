@@ -1,7 +1,7 @@
 {
-  "name": "aitester",
-  "displayName": "AI Tester",
-  "description": "AI Test Generator",
+  "name": "atest",
+  "displayName": "ATest",
+  "description": "Генератор тестов с помощью ии",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.85.0"
