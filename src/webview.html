@@ -7,188 +7,175 @@
         :root {
             --bg: var(--vscode-editor-background);
             --fg: var(--vscode-editor-foreground);
-            --border: var(--vscode-widget-border);
-            --panel-bg: var(--vscode-sideBar-background, #1e1e1e);
-            --card-bg: var(--vscode-editorWidget-background, #252526);
-            --accent: #3b82f6;
-            --success: #10b981;
-            --danger: #ef4444;
+            --border: var(--vscode-widget-border, rgba(128, 128, 128, 0.35));
+            --panel-bg: var(--vscode-sideBar-background);
+            --muted: var(--vscode-descriptionForeground);
             --font-ui: var(--vscode-font-family);
             --font-code: var(--vscode-editor-font-family);
-            --radius: 10px;
-            --radius-btn: 14px;
-            --shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-            --shadow-hover: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+            --radius: 4px;
         }
 
+        * { box-sizing: border-box; }
+
         body {
-            font-family: var(--font-ui);
-            color: var(--fg);
-            background-color: var(--bg);
-            padding: 0;
             margin: 0;
-            display: flex;
             height: 100vh;
-            box-sizing: border-box;
+            display: flex;
             overflow: hidden;
-            font-size: 14px;
+            background: var(--bg);
+            color: var(--fg);
+            font-family: var(--font-ui);
+            font-size: 13px;
         }
 
         .sidebar {
-            width: 320px;
-            background: var(--panel-bg);
-            border-right: 1px solid var(--border);
+            width: 220px;
+            flex-shrink: 0;
             display: flex;
             flex-direction: column;
-            padding: 24px 20px;
-            box-sizing: border-box;
-            gap: 24px;
-            flex-shrink: 0;
+            gap: 20px;
+            padding: 16px;
+            background: var(--panel-bg);
+            border-right: 1px solid var(--border);
         }
 
-        .logo-area h1 { 
-            font-size: 20px; 
-            font-weight: 600; 
-            margin: 0; 
-            color: var(--fg);
-            letter-spacing: -0.5px;
-        }
-
-        .actions-container { display: flex; flex-direction: column; gap: 12px; }
-        
-        .action-btn {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            padding: 16px 24px;
-            border-radius: var(--radius-btn);
-            color: var(--fg);
-            font-size: 15px;
+        .logo-area h1 {
+            margin: 0;
+            font-size: 13px;
             font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: left;
+        }
+
+        .actions-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .action-btn {
             width: 100%;
-            box-shadow: var(--shadow);
-            outline: none;
+            padding: 7px 12px;
+            text-align: left;
+            font: inherit;
+            color: var(--fg);
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
         }
+
         .action-btn:hover:not(:disabled) {
-            background: var(--card-bg) !important;
-            border-color: var(--vscode-focusBorder, #007acc);
-            box-shadow: var(--shadow-hover);
-            transform: translateY(-1px);
+            border-color: var(--fg);
         }
-        .action-btn:focus { outline: none; }
-        .action-btn:disabled { 
-            opacity: 0.5; 
-            cursor: not-allowed; 
-            box-shadow: none; 
-            transform: none;
+
+        .action-btn.primary {
+            color: var(--bg);
+            background: var(--fg);
+            border-color: var(--fg);
         }
-        
-        .action-btn.primary { border-left: 4px solid var(--accent); }
-        .action-btn.warning { border-left: 4px solid #f59e0b; }
-        .action-btn.secondary { border-left: 4px solid #8b5cf6; }
+
+        .action-btn.primary:hover:not(:disabled) {
+            opacity: 0.85;
+        }
+
+        .action-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
 
         .main-content {
             flex: 1;
-            padding: 40px;
+            padding: 20px 24px;
             overflow-y: auto;
-            box-sizing: border-box;
-        }
-        .main-content::-webkit-scrollbar { width: 10px; }
-        .main-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 5px; }
-
-        .content-inner {
-            max-width: 1100px;
-            margin: 0 auto;
-            height: 100%;
         }
 
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 40px; }
-        .stat-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 24px;
-            position: relative;
-            box-shadow: var(--shadow);
-        }
-        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); border-radius: var(--radius) 0 0 var(--radius); }
-        .stat-card.success::before { background: var(--success); }
-        .stat-label { font-size: 13px; color: var(--vscode-descriptionForeground); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .stat-value { font-size: 42px; font-weight: 600; line-height: 1; }
-        .green-text { color: var(--success); }
+        .content-inner { max-width: 640px; }
 
-        .file-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 16px;
+        table {
+            width: 100%;
+            border-collapse: collapse;
         }
-        .file-item {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: var(--shadow);
-            transition: all 0.2s ease;
-        }
-        .file-item:hover {
-            border-color: var(--accent);
-            box-shadow: var(--shadow-hover);
-            transform: translateY(-2px);
-        }
-        .file-item-icon { font-size: 18px; opacity: 0.7; }
-        .file-item-name { font-family: var(--font-code); font-size: 14px; word-break: break-all; }
 
-        .table-container {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-        }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { text-align: left; padding: 16px 24px; }
-        th { 
-            background: rgba(0,0,0,0.1); 
-            color: var(--vscode-descriptionForeground); 
-            font-size: 12px; 
-            text-transform: uppercase; 
-            letter-spacing: 0.5px;
-            font-weight: 600;
+        th, td {
+            padding: 8px 0;
+            text-align: left;
             border-bottom: 1px solid var(--border);
         }
-        td { font-family: var(--font-code); font-size: 14px; border-bottom: 1px solid var(--border); }
-        tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+        th {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+        }
+
+        td {
+            font-family: var(--font-code);
+            font-size: 12px;
+        }
+
         tbody tr:last-child td { border-bottom: none; }
 
-        .loader-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 300px; }
-        .spinner {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            border: 4px solid rgba(150, 150, 150, 0.2);
-            border-top-color: var(--accent);
-            animation: spin 0.8s linear infinite;
-            margin-bottom: 20px;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        tbody tr[data-path] { cursor: pointer; }
 
-        .msg-box { 
-            padding: 24px; 
-            border-radius: var(--radius); 
-            background: var(--card-bg); 
-            border: 1px solid var(--border);
-            border-left: 4px solid var(--accent);
-            box-shadow: var(--shadow);
+        tbody tr[data-path]:hover td:first-child { text-decoration: underline; }
+
+        .skip-list {
+            margin: 6px 0 0;
+            padding-left: 18px;
+            color: var(--muted);
+            font-family: var(--font-code);
+            font-size: 12px;
+            line-height: 1.6;
         }
-        .msg-box.error { border-left-color: var(--danger); }
-        .msg-box.success { border-left-color: var(--success); }
-        .msg-title { font-size: 16px; font-weight: 600; margin: 0 0 8px 0; }
-        .msg-desc { font-size: 14px; color: var(--vscode-descriptionForeground); margin: 0; line-height: 1.5; }
+
+        .loader-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            min-height: 200px;
+        }
+
+        .spinner {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--border);
+            border-top-color: var(--fg);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .msg-box {
+            padding-left: 12px;
+            border-left: 2px solid var(--border);
+        }
+
+        .msg-box.error {
+            border-left-width: 3px;
+            border-left-color: var(--fg);
+        }
+
+        .msg-title {
+            margin: 0 0 4px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .msg-desc {
+            margin: 0;
+            line-height: 1.5;
+            color: var(--muted);
+        }
+
+        code {
+            font-family: var(--font-code);
+            font-size: 12px;
+            color: var(--fg);
+        }
     </style>
 </head>
 <body>
@@ -209,40 +196,25 @@
         </div>
     </main>
 
-    <script src="./gsap.min.js"></script>
     <script>
         const vscode = acquireVsCodeApi();
-        
+
         const buttonsContainer = document.getElementById('buttons-container');
         const contentArea = document.getElementById('content-area');
 
-        let isGenerating = false; // Флаг для процесса генерации (отправка на сервер)
-        let isInit = false;
-        let isInitialized = false;
+        let isGenerating = false;
         let isAutoMode = false;
         let requestTimeout = null;
 
-        // Оставили 3 кнопки: Генерация (бывшая 'Найти контракты'), Инициализация и Авторежим
         const buttonsConfig = [
             { id: 'btn-generate', label: 'Сгенерировать тесты', colorClass: 'primary', action: () => generateTests() },
-            { id: 'btn-init', label: 'Инициализация', colorClass: 'warning', action: () => initProject() },
             { id: 'btn-swap', label: 'Вкл. Авторежим', colorClass: 'secondary', action: () => toggleAutoMode() }
         ];
 
-        function animateIn(element, isStagger = false) {
-            if (typeof gsap !== 'undefined') {
-                if (isStagger) {
-                    gsap.fromTo(element.children, 
-                        { opacity: 0, y: 15 }, 
-                        { opacity: 1, y: 0, duration: 0.4, stagger: 0.05, ease: "power2.out" }
-                    );
-                } else {
-                    gsap.fromTo(element, 
-                        { opacity: 0, y: 15 }, 
-                        { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }
-                    );
-                }
-            }
+        function esc(value) {
+            return String(value).replace(/[&<>"']/g, ch => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[ch]));
         }
 
         function renderButtons() {
@@ -252,17 +224,12 @@
                 button.id = btn.id;
                 button.className = `action-btn ${btn.colorClass}`;
                 button.textContent = btn.label;
-                
-                if (btn.id === 'btn-init' && isInitialized) {
-                    button.disabled = true;
-                    button.textContent = 'Инициализировано';
-                }
 
                 if (btn.id === 'btn-swap') {
                     button.textContent = isAutoMode ? 'Выкл. Авторежим' : 'Вкл. Авторежим';
                 }
-                
-                if (isGenerating || isInit) {
+
+                if (isGenerating) {
                     button.disabled = true;
                 }
 
@@ -273,7 +240,6 @@
 
         function resetButtons() {
             isGenerating = false;
-            isInit = false;
             renderButtons();
             if (requestTimeout) clearTimeout(requestTimeout);
         }
@@ -290,54 +256,27 @@
             contentArea.innerHTML = `
                 <div class="loader-wrapper">
                     <div class="spinner"></div>
-                    <h3 style="margin:0 0 8px 0; font-size:18px; font-weight:600;">${text}</h3>
-                    <p style="margin:0; color:var(--vscode-descriptionForeground); font-size:14px;">${subtext}</p>
+                    <h3 style="margin:0; font-size:13px; font-weight:600;">${esc(text)}</h3>
+                    <p style="margin:0; color:var(--muted);">${esc(subtext)}</p>
                 </div>
             `;
-            if (typeof gsap !== 'undefined') {
-                gsap.fromTo(contentArea, { opacity: 0 }, { opacity: 1, duration: 0.3 });
-            }
         }
 
         function renderError(text) {
             contentArea.innerHTML = `
                 <div class="msg-box error">
-                    <h3 class="msg-title" style="color: var(--danger);">Ошибка</h3>
-                    <p class="msg-desc">${text}</p>
+                    <h3 class="msg-title">Ошибка</h3>
+                    <p class="msg-desc">${esc(text)}</p>
                 </div>
             `;
-            animateIn(contentArea.firstElementChild);
         }
 
         function generateTests() {
             isGenerating = true;
             renderButtons();
             renderLoading('Сбор контрактов и отправка', 'Отправляем файлы на сервер...');
-            // Увеличили таймаут, так как собираются все файлы проекта и идет запрос
-            setRequestTimeout(30000, 'Превышено время ожидания при отправке (30 сек).'); 
-            vscode.postMessage({ command: 'getAllFiles' }); // Шлем getAllFiles, как ждет бэкенд
-        }
-
-        function initProject() {
-            isInit = true;
-            renderButtons();
-            renderLoading('Инициализация');
-            vscode.postMessage({ command: 'init' });
-
-            setTimeout(() => {
-                if (isInit) {
-                    isInit = false;
-                    isInitialized = true;
-                    renderButtons();
-                    contentArea.innerHTML = `
-                        <div class="msg-box success">
-                            <h3 class="msg-title" style="color: var(--success);">Инициализация запущена</h3>
-                            <p class="msg-desc">Структура папок создается...</p>
-                        </div>
-                    `;
-                    animateIn(contentArea.firstElementChild);
-                }
-            }, 2000); 
+            setRequestTimeout(10 * 60 * 1000, 'Сервер не ответил за 10 минут.');
+            vscode.postMessage({ command: 'getAllFiles' });
         }
 
         function toggleAutoMode() {
@@ -348,7 +287,7 @@
 
         window.addEventListener('message', event => {
             const message = event.data;
-            
+
             if (requestTimeout) clearTimeout(requestTimeout);
 
             if (message.command === 'error') {
@@ -357,24 +296,9 @@
                 return;
             }
 
-            if (message.command === 'initReady') {
-                isInit = false;
-                isInitialized = true;
-                renderButtons();
-                contentArea.innerHTML = `
-                    <div class="msg-box success">
-                        <h3 class="msg-title" style="color: var(--success);">Проект инициализирован</h3>
-                        <p class="msg-desc">Созданы папки <code>contracts</code> и <code>Tests</code>.</p>
-                    </div>
-                `;
-                animateIn(contentArea.firstElementChild);
-                return;
-            }
-
-            // Сначала приходит список файлов
             if (message.command === 'filesReady') {
                 const fileKeys = Object.keys(message.data);
-                
+
                 if (fileKeys.length === 0) {
                     resetButtons();
                     contentArea.innerHTML = `
@@ -383,75 +307,65 @@
                             <p class="msg-desc">В папке <code>contracts</code> нет файлов.</p>
                         </div>
                     `;
-                    animateIn(contentArea.firstElementChild);
-                    return;
                 }
-                
-                // Не снимаем лоадер, так как ждем jobQueued
+
+                return;
             }
 
-            // Затем сервер отвечает, что задача в очереди
             if (message.command === 'jobQueued') {
-                isGenerating = false; // Разблокируем кнопки
-                renderButtons();
-                
-                const fileKeys = Object.keys(message.data.files || {});
-                
-                contentArea.innerHTML = `
-                    <div class="msg-box success">
-                        <h3 class="msg-title" style="color: var(--success);">Задача успешно отправлена!</h3>
-                        <p class="msg-desc">
-                            ID задачи: <b>#${message.data.id}</b><br>
-                            Файлов отправлено: <b>${message.data.files}</b><br>
-                            Нейросеть приступила к генерации тестов. Результаты появятся здесь автоматически.
-                        </p>
-                    </div>
-                `;
-                animateIn(contentArea.firstElementChild);
+                renderLoading(
+                    `Задача #${message.data.id} в очереди`,
+                    'Генерируем тесты — это может занять до минуты.'
+                );
                 return;
             }
 
             if (message.command === 'reportReady') {
-                isGenerating = false;
-                renderButtons();
-                
+                resetButtons();
+
                 const data = message.data;
-                const rows = data.details.map(item => `<tr><td>${item.method}</td><td style="text-align: right;" class="green-text">${item.tests}</td></tr>`).join('');
+                const skipped = data.skipped || [];
+                const rows = data.files.map(file =>
+                    `<tr data-path="${esc(file.path)}">` +
+                    `<td>${esc(file.path)}</td>` +
+                    `<td style="text-align: right;">${file.tests}</td>` +
+                    `</tr>`
+                ).join('');
+
+                const summary = data.totalFiles > 0
+                    ? `Файлов: ${data.totalFiles} · тестов: ${data.totalTests} · ` +
+                      'нажмите на строку, чтобы открыть файл'
+                    : 'Все подходящие файлы уже существуют или пропущены.';
+
+                const table = rows
+                    ? `<table>
+                           <thead><tr><th>Файл</th><th style="text-align: right;">Тестов</th></tr></thead>
+                           <tbody>${rows}</tbody>
+                       </table>`
+                    : '';
+
+                const note = skipped.length
+                    ? `<p class="msg-desc" style="margin-top: 16px;">Пропущено:</p>
+                       <ul class="skip-list">
+                           ${skipped.map(item => `<li>${esc(item.path)} — ${esc(item.reason)}</li>`).join('')}
+                       </ul>`
+                    : '';
 
                 contentArea.innerHTML = `
-                    <h2 style="margin-top: 0; margin-bottom: 24px; font-weight: 600; font-size: 20px; color: var(--success);">Успешно сгенерировано</h2>
-                    
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-label">Методов</div>
-                            <div class="stat-value">${data.total_methods}</div>
-                        </div>
-                        <div class="stat-card success">
-                            <div class="stat-label">Тестов</div>
-                            <div class="stat-value green-text">${data.total_tests}</div>
-                        </div>
-                    </div>
-
-                    <div class="table-container">
-                        <table>
-                            <thead><tr><th>Метод</th><th style="text-align: right;">Тестов</th></tr></thead>
-                            <tbody>${rows}</tbody>
-                        </table>
-                    </div>
+                    <h2 style="margin: 0 0 6px; font-size: 14px; font-weight: 600;">
+                        ${data.totalFiles > 0 ? 'Тесты записаны' : 'Новых тестов нет'}
+                    </h2>
+                    <p class="msg-desc" style="margin-bottom: 16px;">${summary}</p>
+                    ${table}
+                    ${note}
                 `;
+            }
+        });
 
-                animateIn(contentArea);
-                
-                if (typeof gsap !== 'undefined') {
-                    gsap.from("tbody tr", {
-                        opacity: 0,
-                        x: -10,
-                        duration: 0.3,
-                        stagger: 0.05,
-                        ease: "power2.out",
-                        delay: 0.2
-                    });
-                }
+        contentArea.addEventListener('click', event => {
+            const row = event.target.closest('tr[data-path]');
+            if (row) {
+                vscode.postMessage({ command: 'openFile', path: row.getAttribute('data-path') });
             }
         });
 
