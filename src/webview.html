@@ -12,10 +12,7 @@
             --muted: var(--vscode-descriptionForeground);
             --font-ui: var(--vscode-font-family);
             --font-code: var(--vscode-editor-font-family);
-            --radius: 10px;
-            --radius-btn: 12px;
-            --shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-            --shadow-hover: 0 6px 12px rgba(0,0,0,0.2), 0 3px 6px rgba(0,0,0,0.15);
+            --radius: 4px;
         }
 
         * { box-sizing: border-box; }
@@ -32,38 +29,29 @@
         }
 
         .sidebar {
-            width: 300px;
-            background: var(--panel-bg);
-            border-right: 1px solid var(--border);
+            width: 220px;
+            flex-shrink: 0;
             display: flex;
             flex-direction: column;
-            padding: 24px 20px;
-            box-sizing: border-box;
-            gap: 32px;
-            flex-shrink: 0;
+            gap: 20px;
+            padding: 16px;
+            background: var(--panel-bg);
+            border-right: 1px solid var(--border);
         }
 
-        .logo-area h1 { 
-            font-size: 20px; 
-            font-weight: 600; 
-            margin: 0; 
-            color: var(--fg);
-            letter-spacing: -0.5px;
+        .logo-area h1 {
+            margin: 0;
+            font-size: 13px;
+            font-weight: 600;
         }
 
-        .actions-container { display: flex; flex-direction: column; gap: 12px; }
-        
+        .actions-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
         .action-btn {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            padding: 14px 20px;
-            border-radius: var(--radius-btn);
-            color: var(--fg);
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: left;
             width: 100%;
             padding: 7px 12px;
             text-align: left;
@@ -74,83 +62,38 @@
             border-radius: var(--radius);
             cursor: pointer;
         }
-        
+
         .action-btn:hover:not(:disabled) {
-            background: var(--card-bg) !important;
-            border-color: var(--accent);
-            box-shadow: var(--shadow-hover);
-            transform: translateY(-2px);
+            border-color: var(--fg);
         }
 
-        .action-btn:active:not(:disabled) {
-            transform: translateY(1px);
-            box-shadow: var(--shadow);
+        .action-btn.primary {
+            color: var(--bg);
+            background: var(--fg);
+            border-color: var(--fg);
         }
 
-        .action-btn:disabled { 
-            opacity: 0.5; 
-            cursor: not-allowed; 
-            box-shadow: none; 
-            transform: none;
+        .action-btn.primary:hover:not(:disabled) {
+            opacity: 0.85;
         }
-        
-        .action-btn.primary { border-left: 3px solid var(--accent); }
-        .action-btn.warning { border-left: 3px solid #f59e0b; }
-        .action-btn.secondary { border-left: 3px solid #8b5cf6; }
+
+        .action-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
 
         .main-content {
             flex: 1;
             padding: 20px 24px;
             overflow-y: auto;
-            box-sizing: border-box;
-        }
-        .main-content::-webkit-scrollbar { width: 8px; }
-        .main-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
-        .content-inner {
-            max-width: 1100px;
-            margin: 0 auto;
-            height: 100%;
         }
 
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
-        .stat-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 24px;
-            position: relative;
-            box-shadow: var(--shadow);
-        }
-        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--accent); border-radius: var(--radius) 0 0 var(--radius); }
-        .stat-card.success::before { background: var(--success); }
-        .stat-label { font-size: 13px; color: var(--vscode-descriptionForeground); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500; }
-        .stat-value { font-size: 38px; font-weight: 600; line-height: 1; }
-        .green-text { color: var(--success); }
+        .content-inner { max-width: 640px; }
 
-        .file-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 16px;
+        table {
+            width: 100%;
+            border-collapse: collapse;
         }
-        .file-item {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: var(--shadow);
-            transition: all 0.2s ease;
-        }
-        .file-item:hover {
-            border-color: var(--accent);
-            box-shadow: var(--shadow-hover);
-            transform: translateY(-2px);
-        }
-        .file-item-icon { font-size: 16px; opacity: 0.6; }
-        .file-item-name { font-family: var(--font-code); font-size: 13px; word-break: break-all; }
 
         th, td {
             padding: 8px 0;
@@ -171,25 +114,84 @@
 
         tbody tr:last-child td { border-bottom: none; }
 
-        .loader-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 300px; }
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 3px solid rgba(150, 150, 150, 0.2);
-            border-top-color: var(--accent);
-            animation: spin 0.8s linear infinite;
-            margin-bottom: 20px;
+        .file-link {
+            color: inherit;
+            font: inherit;
+            text-decoration: none;
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        .msg-box { 
-            padding: 24px; 
-            border-radius: var(--radius); 
-            background: var(--card-bg); 
-            border: 1px solid var(--border);
-            border-left: 3px solid var(--accent);
-            box-shadow: var(--shadow);
+        .file-link:hover,
+        .file-link:focus-visible {
+            text-decoration: underline;
+        }
+
+        .file-link:focus-visible {
+            outline: 2px solid var(--fg);
+            outline-offset: 2px;
+            border-radius: var(--radius);
+        }
+
+        .skip-list {
+            margin: 6px 0 0;
+            padding-left: 18px;
+            color: var(--muted);
+            font-family: var(--font-code);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .loader-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            min-height: 200px;
+        }
+
+        .spinner {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--border);
+            border-top-color: var(--fg);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .msg-box {
+            padding-left: 12px;
+            border-left: 2px solid var(--border);
+        }
+
+        .msg-box.error {
+            border-left-width: 3px;
+            border-left-color: var(--fg);
+        }
+
+        .msg-title {
+            margin: 0 0 4px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .msg-desc {
+            margin: 0;
+            line-height: 1.5;
+            color: var(--muted);
+        }
+
+        code {
+            font-family: var(--font-code);
+            font-size: 12px;
+            color: var(--fg);
         }
     </style>
 </head>
@@ -199,11 +201,13 @@
             <h1>ATest Generator</h1>
         </div>
 
-        <div class="actions-container" id="buttons-container"></div>
+        <div class="actions-container" id="buttons-container"
+             role="toolbar" aria-label="Действия генератора тестов"></div>
     </aside>
 
-    <main class="main-content">
-        <div class="content-inner" id="content-area">
+    <main class="main-content" id="content-area" role="main"
+          aria-live="polite" aria-busy="false">
+        <div class="content-inner">
             <div class="msg-box">
                 <h3 class="msg-title">Панель управления</h3>
                 <p class="msg-desc">Выберите действие на панели слева.</p>
@@ -218,8 +222,6 @@
         const contentArea = document.getElementById('content-area');
 
         let isGenerating = false;
-        let isInit = false;
-        let isInitialized = false;
         let isAutoMode = false;
         let requestTimeout = null;
 
@@ -234,13 +236,8 @@
             }[ch]));
         }
 
-        function animateButtons() {
-            if (typeof gsap !== 'undefined') {
-                gsap.fromTo(".action-btn", 
-                    { opacity: 0, x: -20 }, 
-                    { opacity: 1, x: 0, duration: 0.4, stagger: 0.1, ease: "power2.out", delay: 0.1 }
-                );
-            }
+        function setBusy(state) {
+            contentArea.setAttribute('aria-busy', state ? 'true' : 'false');
         }
 
         function renderButtons() {
@@ -253,6 +250,7 @@
 
                 if (btn.id === 'btn-swap') {
                     button.textContent = isAutoMode ? 'Выкл. Авторежим' : 'Вкл. Авторежим';
+                    button.setAttribute('aria-pressed', isAutoMode ? 'true' : 'false');
                 }
 
                 if (isGenerating) {
@@ -279,20 +277,26 @@
         }
 
         function renderLoading(text, subtext = 'Пожалуйста, подождите...') {
+            setBusy(true);
             contentArea.innerHTML = `
-                <div class="loader-wrapper">
-                    <div class="spinner"></div>
-                    <h3 style="margin:0; font-size:13px; font-weight:600;">${esc(text)}</h3>
-                    <p style="margin:0; color:var(--muted);">${esc(subtext)}</p>
+                <div class="content-inner">
+                    <div class="loader-wrapper" role="status">
+                        <div class="spinner" aria-hidden="true"></div>
+                        <h3 style="margin:0; font-size:13px; font-weight:600;">${esc(text)}</h3>
+                        <p style="margin:0; color:var(--muted);">${esc(subtext)}</p>
+                    </div>
                 </div>
             `;
         }
 
         function renderError(text) {
+            setBusy(false);
             contentArea.innerHTML = `
-                <div class="msg-box error">
-                    <h3 class="msg-title">Ошибка</h3>
-                    <p class="msg-desc">${esc(text)}</p>
+                <div class="content-inner">
+                    <div class="msg-box error" role="alert">
+                        <h3 class="msg-title">Ошибка</h3>
+                        <p class="msg-desc">${esc(text)}</p>
+                    </div>
                 </div>
             `;
         }
@@ -301,30 +305,8 @@
             isGenerating = true;
             renderButtons();
             renderLoading('Сбор контрактов и отправка', 'Отправляем файлы на сервер...');
-            setRequestTimeout(30000, 'Превышено время ожидания при отправке (30 сек).'); 
+            setRequestTimeout(10 * 60 * 1000, 'Сервер не ответил за 10 минут.');
             vscode.postMessage({ command: 'getAllFiles' });
-        }
-
-        function initProject() {
-            isInit = true;
-            renderButtons();
-            renderLoading('Инициализация');
-            vscode.postMessage({ command: 'init' });
-
-            setTimeout(() => {
-                if (isInit) {
-                    isInit = false;
-                    isInitialized = true;
-                    renderButtons();
-                    contentArea.innerHTML = `
-                        <div class="msg-box success">
-                            <h3 class="msg-title" style="color: var(--success);">Инициализация запущена</h3>
-                            <p class="msg-desc">Структура папок создается...</p>
-                        </div>
-                    `;
-                    animateIn(contentArea.firstElementChild);
-                }
-            }, 2000); 
         }
 
         function toggleAutoMode() {
@@ -344,72 +326,55 @@
                 return;
             }
 
-            if (message.command === 'initReady') {
-                isInit = false;
-                isInitialized = true;
-                renderButtons();
-                contentArea.innerHTML = `
-                    <div class="msg-box success">
-                        <h3 class="msg-title" style="color: var(--success);">Проект инициализирован</h3>
-                        <p class="msg-desc">Созданы папки <code>contracts</code> и <code>Tests</code>.</p>
-                    </div>
-                `;
-                animateIn(contentArea.firstElementChild);
-                return;
-            }
-
             if (message.command === 'filesReady') {
                 const fileKeys = Object.keys(message.data);
 
                 if (fileKeys.length === 0) {
                     resetButtons();
+                    setBusy(false);
                     contentArea.innerHTML = `
-                        <div class="msg-box">
-                            <h3 class="msg-title">Контракты не найдены</h3>
-                            <p class="msg-desc">В папке <code>contracts</code> нет файлов.</p>
+                        <div class="content-inner">
+                            <div class="msg-box">
+                                <h3 class="msg-title">Контракты не найдены</h3>
+                                <p class="msg-desc">В папке <code>contracts</code> нет файлов.</p>
+                            </div>
                         </div>
                     `;
                 }
+
+                return;
             }
 
             if (message.command === 'jobQueued') {
-                isGenerating = false;
-                renderButtons();
-                
-                contentArea.innerHTML = `
-                    <div class="msg-box success">
-                        <h3 class="msg-title" style="color: var(--success);">Задача успешно отправлена!</h3>
-                        <p class="msg-desc">
-                            ID задачи: <b>#${message.data.id}</b><br>
-                            Файлов отправлено: <b>${message.data.files}</b><br>
-                            Нейросеть приступила к генерации тестов. Результаты появятся здесь автоматически.
-                        </p>
-                    </div>
-                `;
-                animateIn(contentArea.firstElementChild);
+                renderLoading(
+                    `Задача #${message.data.id} в очереди`,
+                    'Генерируем тесты — это может занять до минуты.'
+                );
                 return;
             }
 
             if (message.command === 'reportReady') {
                 resetButtons();
+                setBusy(false);
 
                 const data = message.data;
                 const skipped = data.skipped || [];
                 const rows = data.files.map(file =>
-                    `<tr data-path="${esc(file.path)}">` +
-                    `<td>${esc(file.path)}</td>` +
+                    `<tr>` +
+                    `<td><button type="button" class="file-link" ` +
+                    `data-path="${esc(file.path)}">${esc(file.path)}</button></td>` +
                     `<td style="text-align: right;">${file.tests}</td>` +
                     `</tr>`
                 ).join('');
 
                 const summary = data.totalFiles > 0
                     ? `Файлов: ${data.totalFiles} · тестов: ${data.totalTests} · ` +
-                      'нажмите на строку, чтобы открыть файл'
+                      'нажмите на имя файла, чтобы открыть его'
                     : 'Все подходящие файлы уже существуют или пропущены.';
 
                 const table = rows
-                    ? `<table>
-                           <thead><tr><th>Файл</th><th style="text-align: right;">Тестов</th></tr></thead>
+                    ? `<table aria-label="Сгенерированные тесты">
+                           <thead><tr><th scope="col">Файл</th><th scope="col" style="text-align: right;">Тестов</th></tr></thead>
                            <tbody>${rows}</tbody>
                        </table>`
                     : '';
@@ -422,25 +387,26 @@
                     : '';
 
                 contentArea.innerHTML = `
-                    <h2 style="margin: 0 0 6px; font-size: 14px; font-weight: 600;">
-                        ${data.totalFiles > 0 ? 'Тесты записаны' : 'Новых тестов нет'}
-                    </h2>
-                    <p class="msg-desc" style="margin-bottom: 16px;">${summary}</p>
-                    ${table}
-                    ${note}
+                    <div class="content-inner">
+                        <h2 style="margin: 0 0 6px; font-size: 14px; font-weight: 600;">
+                            ${data.totalFiles > 0 ? 'Тесты записаны' : 'Новых тестов нет'}
+                        </h2>
+                        <p class="msg-desc" style="margin-bottom: 16px;">${summary}</p>
+                        ${table}
+                        ${note}
+                    </div>
                 `;
             }
         });
 
         contentArea.addEventListener('click', event => {
-            const row = event.target.closest('tr[data-path]');
-            if (row) {
-                vscode.postMessage({ command: 'openFile', path: row.getAttribute('data-path') });
+            const link = event.target.closest('.file-link[data-path]');
+            if (link) {
+                vscode.postMessage({ command: 'openFile', path: link.getAttribute('data-path') });
             }
         });
 
         renderButtons();
-        animateButtons();
     </script>
 </body>
 </html>
