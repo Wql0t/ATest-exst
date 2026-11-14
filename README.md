@@ -34,7 +34,6 @@
     cd go-server
     go run .
     ```
-    *(Не забудьте создать `.env` с `LLM_API_KEY`)*
 
 2.  **Расширение**:
     ```bash
