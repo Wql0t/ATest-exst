@@ -72,11 +72,10 @@
     <h1>ATest Generator</h1>
 
     <div id="screen-select">
-        <p style="color: var(--vscode-descriptionForeground); margin-bottom: 5px;">Выбранный файл:</p>
-        <div class="file-badge">__FILE_NAME__</div>
         <button id="btn-generate">Сгенерировать тесты</button>
-        <button id="btn-get-all">Собрать файлы по контрактам</button>
-        <button id="btn-init">Инициализировать проект</button>
+    </div>
+     <div id="screen-select">
+        <button id="btn-swap">Переключить авторежим</button>
     </div>
 
     <div id="screen-loading" class="hidden loader-container">
@@ -113,6 +112,7 @@
     <script>
         const vscode = acquireVsCodeApi();
         const btnGenerate = document.getElementById('btn-generate');
+        const btnswap = document.getElementById('btn-swap');
         
         function showScreen(id) {
             ['screen-select', 'screen-loading', 'screen-report'].forEach(s => {
@@ -123,19 +123,23 @@
 
         btnGenerate.addEventListener('click', () => {
             showScreen('screen-loading');
-            vscode.postMessage({ command: 'generate' });
-        });
-
-        document.getElementById('btn-get-all').addEventListener('click', () => {
             vscode.postMessage({ command: 'getAllFiles' });
         });
-
-        document.getElementById('btn-init').addEventListener('click', () => {
-            vscode.postMessage({ command: 'init' });
+        btnswap.addEventListener('click', () => {
+            vscode.postMessage({ command: 'tgleAutoMode' });
         });
 
         window.addEventListener('message', event => {
             const message = event.data;
+
+            if (message.command === 'jobQueued') {
+                const loading = document.getElementById('screen-loading');
+                loading.querySelector('.spinner').style.display = 'none';
+                loading.querySelector('p').textContent =
+                    'Задача #' + message.data.id + ' отправлена на сервер';
+                return;
+            }
+
             if (message.command === 'reportReady') {
                 const data = message.data;
                 

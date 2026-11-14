@@ -21,21 +21,7 @@
         "command": "atest.Init",
         "title": "ATest: Init"
       }
-    ],
-    "menus": {
-      "explorer/context": [
-        {
-          "command": "atest.generateTests",
-          "group": "navigation"
-        }
-      ],
-      "editor/context": [
-        {
-          "command": "atest.generateTests",
-          "group": "navigation"
-        }
-      ]
-    }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
