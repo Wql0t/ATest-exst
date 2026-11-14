@@ -42,7 +42,7 @@
             flex-direction: column;
             padding: 24px 20px;
             box-sizing: border-box;
-            gap: 32px;
+            gap: 24px;
             flex-shrink: 0;
         }
 
@@ -86,8 +86,8 @@
         }
         
         .action-btn.primary { border-left: 4px solid var(--accent); }
-        .action-btn.success { border-left: 4px solid var(--success); }
         .action-btn.warning { border-left: 4px solid #f59e0b; }
+        .action-btn.secondary { border-left: 4px solid #8b5cf6; }
 
         .main-content {
             flex: 1;
@@ -197,8 +197,6 @@
             <h1>ATest Generator</h1>
         </div>
 
-        <div id="file-name-badge" style="display: none;">__FILE_NAME__</div>
-
         <div class="actions-container" id="buttons-container"></div>
     </aside>
 
@@ -215,22 +213,20 @@
     <script>
         const vscode = acquireVsCodeApi();
         
-        const rawFileName = document.getElementById('file-name-badge').innerText;
-        const hasFile = rawFileName && rawFileName !== 'Файл не выбран';
-
         const buttonsContainer = document.getElementById('buttons-container');
         const contentArea = document.getElementById('content-area');
 
-        let isGenerating = false;
-        let isFetching = false;
+        let isGenerating = false; // Флаг для процесса генерации (отправка на сервер)
         let isInit = false;
-        let isInitialized = false; // Флаг, что проект уже инициализирован
+        let isInitialized = false;
+        let isAutoMode = false;
         let requestTimeout = null;
 
+        // Оставили 3 кнопки: Генерация (бывшая 'Найти контракты'), Инициализация и Авторежим
         const buttonsConfig = [
             { id: 'btn-generate', label: 'Сгенерировать тесты', colorClass: 'primary', action: () => generateTests() },
-            { id: 'btn-get-all', label: 'Найти контракты', colorClass: 'success', action: () => fetchContracts() },
-            { id: 'btn-init', label: 'Инициализация', colorClass: 'warning', action: () => initProject() }
+            { id: 'btn-init', label: 'Инициализация', colorClass: 'warning', action: () => initProject() },
+            { id: 'btn-swap', label: 'Вкл. Авторежим', colorClass: 'secondary', action: () => toggleAutoMode() }
         ];
 
         function animateIn(element, isStagger = false) {
@@ -257,20 +253,16 @@
                 button.className = `action-btn ${btn.colorClass}`;
                 button.textContent = btn.label;
                 
-                // Блокировка кнопки генерации, если нет файла
-                if (btn.id === 'btn-generate' && !hasFile) {
-                    button.disabled = true;
-                    button.textContent = 'Файл не выбран';
-                }
-
-                // Блокировка кнопки инициализации, если уже инициализировано
                 if (btn.id === 'btn-init' && isInitialized) {
                     button.disabled = true;
                     button.textContent = 'Инициализировано';
                 }
+
+                if (btn.id === 'btn-swap') {
+                    button.textContent = isAutoMode ? 'Выкл. Авторежим' : 'Вкл. Авторежим';
+                }
                 
-                // Блокировка всех кнопок, если идет любой процесс
-                if (isGenerating || isFetching || isInit) {
+                if (isGenerating || isInit) {
                     button.disabled = true;
                 }
 
@@ -281,7 +273,6 @@
 
         function resetButtons() {
             isGenerating = false;
-            isFetching = false;
             isInit = false;
             renderButtons();
             if (requestTimeout) clearTimeout(requestTimeout);
@@ -295,12 +286,12 @@
             }, ms);
         }
 
-        function renderLoading(text) {
+        function renderLoading(text, subtext = 'Пожалуйста, подождите...') {
             contentArea.innerHTML = `
                 <div class="loader-wrapper">
                     <div class="spinner"></div>
                     <h3 style="margin:0 0 8px 0; font-size:18px; font-weight:600;">${text}</h3>
-                    <p style="margin:0; color:var(--vscode-descriptionForeground); font-size:14px;">Пожалуйста, подождите...</p>
+                    <p style="margin:0; color:var(--vscode-descriptionForeground); font-size:14px;">${subtext}</p>
                 </div>
             `;
             if (typeof gsap !== 'undefined') {
@@ -321,31 +312,22 @@
         function generateTests() {
             isGenerating = true;
             renderButtons();
-            renderLoading('Генерация тестов');
-            setRequestTimeout(10000, 'Превышено время ожидания (10 сек).'); 
-            vscode.postMessage({ command: 'generate' });
-        }
-
-        function fetchContracts() {
-            isFetching = true;
-            renderButtons();
-            renderLoading('Сбор контрактов');
-            setRequestTimeout(10000, 'Превышено время ожидания (10 сек).'); 
-            vscode.postMessage({ command: 'getAllFiles' });
+            renderLoading('Сбор контрактов и отправка', 'Отправляем файлы на сервер...');
+            // Увеличили таймаут, так как собираются все файлы проекта и идет запрос
+            setRequestTimeout(30000, 'Превышено время ожидания при отправке (30 сек).'); 
+            vscode.postMessage({ command: 'getAllFiles' }); // Шлем getAllFiles, как ждет бэкенд
         }
 
         function initProject() {
             isInit = true;
             renderButtons();
             renderLoading('Инициализация');
-            
             vscode.postMessage({ command: 'init' });
 
-            // Страховка, если бэкенд не шлет ответ
             setTimeout(() => {
                 if (isInit) {
                     isInit = false;
-                    isInitialized = true; // Блокируем кнопку навсегда
+                    isInitialized = true;
                     renderButtons();
                     contentArea.innerHTML = `
                         <div class="msg-box success">
@@ -356,6 +338,12 @@
                     animateIn(contentArea.firstElementChild);
                 }
             }, 2000); 
+        }
+
+        function toggleAutoMode() {
+            isAutoMode = !isAutoMode;
+            vscode.postMessage({ command: 'tgleAutoMode' });
+            renderButtons();
         }
 
         window.addEventListener('message', event => {
@@ -371,7 +359,7 @@
 
             if (message.command === 'initReady') {
                 isInit = false;
-                isInitialized = true; // Блокируем кнопку навсегда
+                isInitialized = true;
                 renderButtons();
                 contentArea.innerHTML = `
                     <div class="msg-box success">
@@ -383,14 +371,12 @@
                 return;
             }
 
+            // Сначала приходит список файлов
             if (message.command === 'filesReady') {
-                isFetching = false;
-                renderButtons();
+                const fileKeys = Object.keys(message.data);
                 
-                const files = message.data;
-                const fileKeys = Object.keys(files);
-
                 if (fileKeys.length === 0) {
+                    resetButtons();
                     contentArea.innerHTML = `
                         <div class="msg-box">
                             <h3 class="msg-title">Контракты не найдены</h3>
@@ -400,20 +386,29 @@
                     animateIn(contentArea.firstElementChild);
                     return;
                 }
-
-                const fileItems = fileKeys.map(path => {
-                    const name = path.split(/[\\/]/).pop();
-                    return `<div class="file-item" title="${path}"><div class="file-item-icon">📄</div><div class="file-item-name">${name}</div></div>`;
-                }).join('');
-
-                contentArea.innerHTML = `
-                    <h2 style="margin-top: 0; margin-bottom: 16px; font-weight: 600; font-size: 20px;">Найденные контракты</h2>
-                    <p style="color: var(--vscode-descriptionForeground); margin-bottom: 24px;">Всего файлов: ${fileKeys.length}</p>
-                    <div class="file-grid">${fileItems}</div>
-                `;
                 
-                const grid = contentArea.querySelector('.file-grid');
-                animateIn(grid, true);
+                // Не снимаем лоадер, так как ждем jobQueued
+            }
+
+            // Затем сервер отвечает, что задача в очереди
+            if (message.command === 'jobQueued') {
+                isGenerating = false; // Разблокируем кнопки
+                renderButtons();
+                
+                const fileKeys = Object.keys(message.data.files || {});
+                
+                contentArea.innerHTML = `
+                    <div class="msg-box success">
+                        <h3 class="msg-title" style="color: var(--success);">Задача успешно отправлена!</h3>
+                        <p class="msg-desc">
+                            ID задачи: <b>#${message.data.id}</b><br>
+                            Файлов отправлено: <b>${message.data.files}</b><br>
+                            Нейросеть приступила к генерации тестов. Результаты появятся здесь автоматически.
+                        </p>
+                    </div>
+                `;
+                animateIn(contentArea.firstElementChild);
+                return;
             }
 
             if (message.command === 'reportReady') {
