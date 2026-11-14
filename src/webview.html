@@ -135,6 +135,9 @@
             border-radius: var(--radius);
         }
 
+        .pass { color: var(--vscode-testing-iconPassed, #3fb950); }
+        .fail { color: var(--vscode-testing-iconFailed, #f85149); }
+
         .skip-list {
             margin: 6px 0 0;
             padding-left: 18px;
@@ -143,6 +146,33 @@
             font-size: 12px;
             line-height: 1.6;
         }
+
+        .muted { color: var(--muted); }
+
+        .cases-cell {
+            padding-top: 0;
+            font-family: var(--font-ui);
+        }
+
+        .cases-cell details {
+            margin-top: -4px;
+        }
+
+        .cases-cell summary {
+            color: var(--muted);
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .case-list {
+            margin: 6px 0 0;
+            padding-left: 18px;
+            font-family: var(--font-code);
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .case-list li { overflow-wrap: anywhere; }
 
         .loader-wrapper {
             display: flex;
@@ -222,12 +252,11 @@
         const contentArea = document.getElementById('content-area');
 
         let isGenerating = false;
-        let isAutoMode = false;
         let requestTimeout = null;
 
         const buttonsConfig = [
             { id: 'btn-generate', label: 'Сгенерировать тесты', colorClass: 'primary', action: () => generateTests() },
-            { id: 'btn-swap', label: 'Вкл. Авторежим', colorClass: 'secondary', action: () => toggleAutoMode() }
+            { id: 'btn-history', label: 'Все тесты', colorClass: '', action: () => loadHistory() }
         ];
 
         function esc(value) {
@@ -247,11 +276,6 @@
                 button.id = btn.id;
                 button.className = `action-btn ${btn.colorClass}`;
                 button.textContent = btn.label;
-
-                if (btn.id === 'btn-swap') {
-                    button.textContent = isAutoMode ? 'Выкл. Авторежим' : 'Вкл. Авторежим';
-                    button.setAttribute('aria-pressed', isAutoMode ? 'true' : 'false');
-                }
 
                 if (isGenerating) {
                     button.disabled = true;
@@ -309,10 +333,89 @@
             vscode.postMessage({ command: 'getAllFiles' });
         }
 
-        function toggleAutoMode() {
-            isAutoMode = !isAutoMode;
-            vscode.postMessage({ command: 'tgleAutoMode' });
-            renderButtons();
+        function loadHistory() {
+            if (isGenerating) return;
+            renderLoading('Загрузка истории', 'Читаем сохранённые результаты тестов...');
+            setRequestTimeout(10 * 1000, 'Не удалось загрузить историю.');
+            vscode.postMessage({ command: 'getHistory' });
+        }
+
+        function resultText(file) {
+            if (file.error) {
+                return `<span class="fail">${esc(file.error)}</span>`;
+            }
+            if (file.passed || file.failed) {
+                return `<span class="${file.failed ? 'fail' : 'pass'}">✓ ${file.passed} / ✗ ${file.failed}</span>`;
+            }
+            return '—';
+        }
+
+        function renderHistory(entries) {
+            if (!entries.length) {
+                contentArea.innerHTML = `
+                    <div class="content-inner">
+                        <div class="msg-box">
+                            <h3 class="msg-title">История пуста</h3>
+                            <p class="msg-desc">Здесь появятся все сгенерированные тесты и результаты их прогонов.</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            const rows = entries.map(file => {
+                const date = file.updatedAt
+                    ? new Date(file.updatedAt).toLocaleString('ru-RU')
+                    : '—';
+                const cases = file.cases || [];
+                const details = cases.length
+                    ? `<tr><td colspan="4" class="cases-cell">` +
+                      `<details><summary>Показать тесты (${cases.length})</summary>` +
+                      `<ul class="case-list">` +
+                      cases.map(item =>
+                          `<li class="${item.status === 'passed' ? 'pass' : 'fail'}">` +
+                          `${item.status === 'passed' ? '✓' : '✗'} ${esc(item.name)}` +
+                          `${item.message ? ` — ${esc(item.message)}` : ''}` +
+                          `</li>`
+                      ).join('') +
+                      `</ul></details></td></tr>`
+                    : '';
+
+                return `<tr>` +
+                    `<td><button type="button" class="file-link" ` +
+                    `data-path="${esc(file.path)}">${esc(file.path)}</button></td>` +
+                    `<td style="text-align: right;">${file.tests}</td>` +
+                    `<td style="text-align: right;">${resultText(file)}</td>` +
+                    `<td class="muted" style="text-align: right;">${esc(date)}</td>` +
+                    `</tr>` + details;
+            }).join('');
+
+            const totals = entries.reduce((acc, file) => {
+                acc.tests += file.tests || 0;
+                acc.passed += file.passed || 0;
+                acc.failed += file.failed || 0;
+                return acc;
+            }, { tests: 0, passed: 0, failed: 0 });
+
+            contentArea.innerHTML = `
+                <div class="content-inner">
+                    <h2 style="margin: 0 0 6px; font-size: 14px; font-weight: 600;">Все тесты</h2>
+                    <p class="msg-desc" style="margin-bottom: 16px;">
+                        Файлов: ${entries.length} · тестов: ${totals.tests} ·
+                        <span class="pass">пройдено: ${totals.passed}</span> ·
+                        <span class="fail">провалено: ${totals.failed}</span>
+                    </p>
+                    <table aria-label="История тестов">
+                        <thead><tr>
+                            <th scope="col">Файл</th>
+                            <th scope="col" style="text-align: right;">Тестов</th>
+                            <th scope="col" style="text-align: right;">Результат</th>
+                            <th scope="col" style="text-align: right;">Обновлён</th>
+                        </tr></thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                </div>
+            `;
         }
 
         window.addEventListener('message', event => {
@@ -353,19 +456,29 @@
                 return;
             }
 
+            if (message.command === 'historyReady') {
+                resetButtons();
+                setBusy(false);
+                renderHistory(message.data || []);
+                return;
+            }
+
             if (message.command === 'reportReady') {
                 resetButtons();
                 setBusy(false);
 
                 const data = message.data;
                 const skipped = data.skipped || [];
-                const rows = data.files.map(file =>
-                    `<tr>` +
-                    `<td><button type="button" class="file-link" ` +
-                    `data-path="${esc(file.path)}">${esc(file.path)}</button></td>` +
-                    `<td style="text-align: right;">${file.tests}</td>` +
-                    `</tr>`
-                ).join('');
+                const rows = data.files.map(file => {
+                    const result = resultText(file);
+
+                    return `<tr>` +
+                        `<td><button type="button" class="file-link" ` +
+                        `data-path="${esc(file.path)}">${esc(file.path)}</button></td>` +
+                        `<td style="text-align: right;">${file.tests}</td>` +
+                        `<td style="text-align: right;">${result}</td>` +
+                        `</tr>`;
+                }).join('');
 
                 const summary = data.totalFiles > 0
                     ? `Файлов: ${data.totalFiles} · тестов: ${data.totalTests} · ` +
@@ -374,7 +487,7 @@
 
                 const table = rows
                     ? `<table aria-label="Сгенерированные тесты">
-                           <thead><tr><th scope="col">Файл</th><th scope="col" style="text-align: right;">Тестов</th></tr></thead>
+                           <thead><tr><th scope="col">Файл</th><th scope="col" style="text-align: right;">Тестов</th><th scope="col" style="text-align: right;">Результат</th></tr></thead>
                            <tbody>${rows}</tbody>
                        </table>`
                     : '';

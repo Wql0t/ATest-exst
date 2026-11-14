@@ -14,4 +14,5 @@ venv/
 *.key
 *.pem
 *.log
+*.vsix
 .DS_Store

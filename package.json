@@ -1,5 +1,6 @@
 {
   "name": "atest",
+  "publisher": "wql0t",
   "displayName": "ATest",
   "description": "Генератор тестов с помощью ии",
   "version": "0.0.1",
