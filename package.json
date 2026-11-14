@@ -11,11 +11,11 @@
     "commands": [
       {
         "command": "atest.openDashboard",
-        "title": "ATest: Открыть дашбоард"
+        "title": "ATest: Open dashboard"
       },
       {
         "command": "atest.generateTests",
-        "title": "ATest: Создать тест"
+        "title": "ATest: Generate test"
       }
     ],
     "menus": {

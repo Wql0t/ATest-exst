@@ -1,4 +1,3 @@
-// Mocks for local
 export const mockTestReport = {
   total_methods: 5,
   total_tests: 12,
