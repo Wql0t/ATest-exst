@@ -16,9 +16,9 @@
             --font-ui: var(--vscode-font-family);
             --font-code: var(--vscode-editor-font-family);
             --radius: 10px;
-            --radius-btn: 14px;
+            --radius-btn: 12px;
             --shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-            --shadow-hover: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+            --shadow-hover: 0 6px 12px rgba(0,0,0,0.2), 0 3px 6px rgba(0,0,0,0.15);
         }
 
         body {
@@ -35,14 +35,14 @@
         }
 
         .sidebar {
-            width: 320px;
+            width: 300px;
             background: var(--panel-bg);
             border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
             padding: 24px 20px;
             box-sizing: border-box;
-            gap: 24px;
+            gap: 32px;
             flex-shrink: 0;
         }
 
@@ -59,11 +59,11 @@
         .action-btn {
             background: var(--card-bg);
             border: 1px solid var(--border);
-            padding: 16px 24px;
+            padding: 14px 20px;
             border-radius: var(--radius-btn);
             color: var(--fg);
-            font-size: 15px;
-            font-weight: 600;
+            font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
             text-align: left;
@@ -71,13 +71,19 @@
             box-shadow: var(--shadow);
             outline: none;
         }
+        
         .action-btn:hover:not(:disabled) {
             background: var(--card-bg) !important;
-            border-color: var(--vscode-focusBorder, #007acc);
+            border-color: var(--accent);
             box-shadow: var(--shadow-hover);
-            transform: translateY(-1px);
+            transform: translateY(-2px);
         }
-        .action-btn:focus { outline: none; }
+
+        .action-btn:active:not(:disabled) {
+            transform: translateY(1px);
+            box-shadow: var(--shadow);
+        }
+
         .action-btn:disabled { 
             opacity: 0.5; 
             cursor: not-allowed; 
@@ -85,9 +91,9 @@
             transform: none;
         }
         
-        .action-btn.primary { border-left: 4px solid var(--accent); }
-        .action-btn.warning { border-left: 4px solid #f59e0b; }
-        .action-btn.secondary { border-left: 4px solid #8b5cf6; }
+        .action-btn.primary { border-left: 3px solid var(--accent); }
+        .action-btn.warning { border-left: 3px solid #f59e0b; }
+        .action-btn.secondary { border-left: 3px solid #8b5cf6; }
 
         .main-content {
             flex: 1;
@@ -95,8 +101,8 @@
             overflow-y: auto;
             box-sizing: border-box;
         }
-        .main-content::-webkit-scrollbar { width: 10px; }
-        .main-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 5px; }
+        .main-content::-webkit-scrollbar { width: 8px; }
+        .main-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
         .content-inner {
             max-width: 1100px;
@@ -104,7 +110,7 @@
             height: 100%;
         }
 
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 40px; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
         .stat-card {
             background: var(--card-bg);
             border: 1px solid var(--border);
@@ -113,22 +119,22 @@
             position: relative;
             box-shadow: var(--shadow);
         }
-        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); border-radius: var(--radius) 0 0 var(--radius); }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--accent); border-radius: var(--radius) 0 0 var(--radius); }
         .stat-card.success::before { background: var(--success); }
-        .stat-label { font-size: 13px; color: var(--vscode-descriptionForeground); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .stat-value { font-size: 42px; font-weight: 600; line-height: 1; }
+        .stat-label { font-size: 13px; color: var(--vscode-descriptionForeground); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500; }
+        .stat-value { font-size: 38px; font-weight: 600; line-height: 1; }
         .green-text { color: var(--success); }
 
         .file-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 16px;
         }
         .file-item {
             background: var(--card-bg);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 20px;
+            padding: 16px;
             display: flex;
             align-items: center;
             gap: 12px;
@@ -140,8 +146,8 @@
             box-shadow: var(--shadow-hover);
             transform: translateY(-2px);
         }
-        .file-item-icon { font-size: 18px; opacity: 0.7; }
-        .file-item-name { font-family: var(--font-code); font-size: 14px; word-break: break-all; }
+        .file-item-icon { font-size: 16px; opacity: 0.6; }
+        .file-item-name { font-family: var(--font-code); font-size: 13px; word-break: break-all; }
 
         .table-container {
             background: var(--card-bg);
@@ -167,10 +173,10 @@
 
         .loader-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 300px; }
         .spinner {
-            width: 44px;
-            height: 44px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            border: 4px solid rgba(150, 150, 150, 0.2);
+            border: 3px solid rgba(150, 150, 150, 0.2);
             border-top-color: var(--accent);
             animation: spin 0.8s linear infinite;
             margin-bottom: 20px;
@@ -182,7 +188,7 @@
             border-radius: var(--radius); 
             background: var(--card-bg); 
             border: 1px solid var(--border);
-            border-left: 4px solid var(--accent);
+            border-left: 3px solid var(--accent);
             box-shadow: var(--shadow);
         }
         .msg-box.error { border-left-color: var(--danger); }
@@ -216,13 +222,12 @@
         const buttonsContainer = document.getElementById('buttons-container');
         const contentArea = document.getElementById('content-area');
 
-        let isGenerating = false; // Флаг для процесса генерации (отправка на сервер)
+        let isGenerating = false;
         let isInit = false;
         let isInitialized = false;
         let isAutoMode = false;
         let requestTimeout = null;
 
-        // Оставили 3 кнопки: Генерация (бывшая 'Найти контракты'), Инициализация и Авторежим
         const buttonsConfig = [
             { id: 'btn-generate', label: 'Сгенерировать тесты', colorClass: 'primary', action: () => generateTests() },
             { id: 'btn-init', label: 'Инициализация', colorClass: 'warning', action: () => initProject() },
@@ -242,6 +247,15 @@
                         { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }
                     );
                 }
+            }
+        }
+
+        function animateButtons() {
+            if (typeof gsap !== 'undefined') {
+                gsap.fromTo(".action-btn", 
+                    { opacity: 0, x: -20 }, 
+                    { opacity: 1, x: 0, duration: 0.4, stagger: 0.1, ease: "power2.out", delay: 0.1 }
+                );
             }
         }
 
@@ -313,9 +327,8 @@
             isGenerating = true;
             renderButtons();
             renderLoading('Сбор контрактов и отправка', 'Отправляем файлы на сервер...');
-            // Увеличили таймаут, так как собираются все файлы проекта и идет запрос
             setRequestTimeout(30000, 'Превышено время ожидания при отправке (30 сек).'); 
-            vscode.postMessage({ command: 'getAllFiles' }); // Шлем getAllFiles, как ждет бэкенд
+            vscode.postMessage({ command: 'getAllFiles' });
         }
 
         function initProject() {
@@ -371,7 +384,6 @@
                 return;
             }
 
-            // Сначала приходит список файлов
             if (message.command === 'filesReady') {
                 const fileKeys = Object.keys(message.data);
                 
@@ -386,16 +398,11 @@
                     animateIn(contentArea.firstElementChild);
                     return;
                 }
-                
-                // Не снимаем лоадер, так как ждем jobQueued
             }
 
-            // Затем сервер отвечает, что задача в очереди
             if (message.command === 'jobQueued') {
-                isGenerating = false; // Разблокируем кнопки
+                isGenerating = false;
                 renderButtons();
-                
-                const fileKeys = Object.keys(message.data.files || {});
                 
                 contentArea.innerHTML = `
                     <div class="msg-box success">
@@ -456,6 +463,7 @@
         });
 
         renderButtons();
+        animateButtons();
     </script>
 </body>
 </html>
