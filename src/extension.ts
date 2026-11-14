@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { mockTestReport } from './mocks';
 import * as dotenv from 'dotenv';
 import { initProject } from './contractUtils';
-import { getFileWithDeps } from './dependencyUtils';
+import { collectFilesForContracts } from './dependencyUtils';
 
 let autoMode = false;
 
@@ -24,40 +24,38 @@ export function activate(context: vscode.ExtensionContext) {
     panel.webview.onDidReceiveMessage(async (msg) => {
       if (msg.command === 'tgleAutoMode') {
         autoMode = !autoMode;
-        vscode.window.showInformationMessage('Авторежим изменен: ' + autoMode);
+        vscode.window.showInformationMessage('Авторежим: ' + autoMode);
       }
 
-      if (msg.command === 'generate') {
-        vscode.window.showInformationMessage('Генерация для файла: ' + fileName);
-
-        if (process.env.USE_MOCKS === 'true') {
-          setTimeout(() => {
-            panel.webview.postMessage({
-              command: 'reportReady',
-              data: mockTestReport
-            });
-          }, 1000);
-        }
-      }
+      // if (msg.command === 'generate') {
+      //   vscode.window.showInformationMessage('Генерация для файла: ' + fileName);
+      //   if (process.env.USE_MOCKS === 'true') {
+      //     setTimeout(() => {
+      //       panel.webview.postMessage({
+      //         command: 'reportReady',
+      //         data: mockTestReport
+      //       });
+      //     }, 1000);
+      //   }
+      // }
 
       if (msg.command === 'getAllFiles') {
-        const foundFiles = await vscode.workspace.findFiles('contracts/**/*', '**/node_modules/**');
-        let filesMap: { [key: string]: string } = {};
+        try {
+          const files = await collectFilesForContracts();
+          const fileCount = Object.keys(files).length;
 
-        for (let f of foundFiles) {
-          filesMap = await getFileWithDeps(f.fsPath, filesMap);
+          console.log(Object.keys(files));
+          vscode.window.showInformationMessage(`Файлов с зависимостями: ${fileCount}`);
+
+          panel.webview.postMessage({
+            command: 'filesReady',
+            data: files
+          });
+        } catch (err) {
+          vscode.window.showErrorMessage(`Ошибка сбора файлов: ${err}`);
         }
-
-        vscode.window.showInformationMessage('Найдено файлов с зависимостями: ' + Object.keys(filesMap).length);
-        panel.webview.postMessage({
-          command: 'filesReady',
-          data: filesMap
-        });
       }
 
-      if (msg.command === 'init') {
-        initProject(context);
-      }
     });
   };
 
@@ -66,7 +64,12 @@ export function activate(context: vscode.ExtensionContext) {
       createDashboard();
     })
   );
-
+  context.subscriptions.push(
+    vscode.commands.registerCommand('atest.Init', () => {
+     initProject(context);
+     vscode.window.showInformationMessage('Иницилизация прошла успешно');
+    })
+  );
   context.subscriptions.push(
     vscode.commands.registerCommand('atest.generateTests', (uri?: vscode.Uri) => {
       const fileName = uri ? uri.fsPath.split(/[\\/]/).pop() : 'Файл не выбран';

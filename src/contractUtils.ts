@@ -1,5 +1,21 @@
 import * as vscode from 'vscode';
 
+export function findContractFiles(): Thenable<vscode.Uri[]> {
+    return vscode.workspace.findFiles('**/contracts/**/*.ts', '**/node_modules/**');
+}
+
+export function getContractMethods(text: string): string[] {
+    const methods = new Set<string>();
+
+    for (const match of text.matchAll(/([A-Za-z_$][\w$]*)\s*(?:<[^>]*>)?\s*\([^()]*\)\s*(?::|;)/g)) {
+        if (match[1] !== 'constructor') {
+            methods.add(match[1]);
+        }
+    }
+
+    return [...methods];
+}
+
 export async function initProject(context: vscode.ExtensionContext) {
     const workspaceRoot = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
     if (!workspaceRoot) {
