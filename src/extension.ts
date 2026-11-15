@@ -140,15 +140,12 @@ function countTests(content: string): number {
   return (content.match(/\b(?:it|test|specify)\s*\(/g) ?? []).length;
 }
 
-// В C++ тест и реализация компилируются как один файл через #include.
-// Если в реализации есть main(), получаем "redefinition of main" — переименовываем
-// точку входа реализации на время include.
+
 function namePattern(name: string): RegExp {
   return new RegExp(`\\b${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`);
 }
 
-// Проверяет, что тест действительно подключил реализацию и вызвал хотя бы один
-// метод из контрактов, а не сгенерировал изолированную заглушку.
+
 function referencesImplementation(
   content: string,
   files: { [path: string]: string },
